@@ -1,40 +1,45 @@
 'use client'
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 
 type VideoPlayerProps = {
-    src: string
+    src: string[]
 }
 
-const VideoPlayer = ({ src }: VideoPlayerProps) => {
+export default function VideoPlayer ({ src }: VideoPlayerProps) {
     const videoRef = useRef<HTMLVideoElement | null>(null);
+    const [sources, setSources] = useState(src);
 
     useEffect(() => {
         const video = videoRef.current;
-
         if (video) {
-            console.log("jojo")
-            video.addEventListener('playing', () => {
-                console.log("asdf")
+            video.addEventListener('play', () => {
                 video.muted = false;
+            });
+
+            video.addEventListener('ended', () => {
+                console.log("ended")
+                setSources(prevSources => prevSources.slice(1));
             });
 
             // cleanup function
             return () => {
-                console.log("clean up")
                 video.removeEventListener('play', () => {
                     video.muted = false;
                 });
+
+                video.removeEventListener('ended', () => {
+                    setSources(prevSources => prevSources.slice(1));
+                });
             };
         }
-
     }, []);
 
     return (
-        <video ref={videoRef} autoPlay muted controls loop>
-            <source src={src} type="video/mp4" />
-        </video>
+        sources[0] && (
+            <video key={sources[0]} ref={videoRef} autoPlay muted controls>
+                <source src={sources[0]} type="video/mp4" />
+            </video>
+        )
     );
 };
-
-export default VideoPlayer;
