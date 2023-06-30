@@ -33,7 +33,7 @@ export default function VideoPlayer ({ src }: VideoPlayerProps) {
                 });
             };
         }
-    }, []);
+    }, [sources]);
 
     return (
         sources[0] && (
